@@ -1,5 +1,6 @@
 import random as rand
 import pandas as pd
+import numpy as np
 
 
 
@@ -13,43 +14,34 @@ def generate_ols_dataset(
     noise_std=2.0,
     include_error_col=True,
     seed=None,
-    output_filepath=None,
+    output_filepath='data.csv',
 ):
-    if seed is not None:
-        rand.seed(seed)
+    rng = np.random.default_rng(seed)
+    betas = np.asarray(betas)
+    k = len(betas)
 
-    data = []
-    num_features = len(betas)
+    # n_obs x k matrix of uniform features
+    X = rng.uniform(x_bounds[0], x_bounds[1], size=(n_obs, k))
 
-    for _ in range(n_obs):
-        # 1. Generate independent features X_1 ... X_k
-        row_x = [rand.uniform(x_bounds[0], x_bounds[1]) for _ in range(num_features)]
+    # Gaussian errors
+    error = rng.normal(noise_mean, noise_std, size=n_obs)
 
-        # 2. Draw random Gaussian error term (epsilon)
-        error = rand.gauss(noise_mean, noise_std)
+    # Y = beta_0 + X @ betas + error
+    y = beta_0 + X @ betas + error
 
-        # 3. Compute true Y = beta_0 + sum(beta_i * X_i) + error
-        y = beta_0 + sum(b * x for b, x in zip(betas, row_x)) + error
+    df = pd.DataFrame(X, columns=[f"X{j+1}" for j in range(k)])
+    if include_error_col:
+        df["error"] = error
+    df["Y"] = y
 
-        # 4. Assemble row dictionary
-        record = {f"X{j+1}": row_x[j] for j in range(num_features)}
-        if include_error_col:
-            record["error"] = error
-        record["Y"] = y
-
-        data.append(record)
-
-    df = pd.DataFrame(data)
-
-    # 5. Optional file export
     if output_filepath:
-        if output_filepath.endswith(".csv"):
-            df.to_csv(output_filepath, index=False)
-        elif output_filepath.endswith((".xlsx", ".xls")):
+        if output_filepath.endswith((".xlsx", ".xls")):
             df.to_excel(output_filepath, index=False)
         else:
-            # Default fallback export
             df.to_csv(output_filepath, index=False)
 
     return df
 
+
+data_test = generate_ols_dataset()
+print(data_test.head())
