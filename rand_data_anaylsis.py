@@ -1,9 +1,5 @@
-import random as rand
 import pandas as pd
 import numpy as np
-
-
-
 
 def generate_ols_dataset(
     n_obs=1000,
@@ -41,7 +37,3 @@ def generate_ols_dataset(
             df.to_csv(output_filepath, index=False)
 
     return df
-
-
-data_test = generate_ols_dataset()
-print(data_test.head())
