@@ -1,15 +1,15 @@
 import numpy as np
 import pandas as pd
 from patsy import dmatrices
-from rand_data_anaylsis import generate_ols_dataset
+from rand_data_analysis import generate_ols_dataset
 
 
 class OLS:
     def __init__(self, formula, data):
         y, X = dmatrices(formula, data=data, return_type="dataframe")
         self.names = list(X.columns)
-        self.y = y.values              # shape (n, 1)
-        self.X = X.values              # shape (n, k)
+        self.y = y.values              
+        self.X = X.values              
         self.n, self.k = self.X.shape
 
         self.beta = None
@@ -20,14 +20,12 @@ class OLS:
         XtX = self.X.T @ self.X
         Xty = self.X.T @ self.y
 
-        # Beta: solve is more stable than explicitly inverting
+        
         self.beta = np.linalg.solve(XtX, Xty)
 
-        # Residual variance
         uhat = self.y - self.X @ self.beta
         self.sigmasq = (uhat.T @ uhat).item() / (self.n - self.k)
 
-        # Variance-covariance matrix of beta
         self.varbeta = self.sigmasq * np.linalg.inv(XtX)
         return self
 
