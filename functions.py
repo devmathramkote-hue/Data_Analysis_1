@@ -47,12 +47,32 @@ class OLS:
     def _check_fitted(self):
         if self.beta is None:
             raise RuntimeError("Call .fit() before using this method.")
+    
+    def r_squared(self):
+        self._check_fitted()
+        uhat = self.y - self.X @ self.beta
+        RSS = (uhat.T @ uhat).item()
 
-'''
+        if "Intercept" in self.names:
+            TSS = ((self.y - self.y.mean()) ** 2).sum()   # centred
+        else:
+            TSS = (self.y.T @ self.y).item()              # uncentred
+
+        return 1 - RSS / TSS
+
+    def adj_r_squared(self):
+        r2 = self.r_squared()
+        return 1 - (1 - r2) * (self.n - 1) / (self.n - self.k)
+
+
 if __name__ == "__main__":
+    
+    
     df = generate_ols_dataset()
-    model = OLS("y ~ x1 + x2", df).fit()   # adjust formula to your columns
+    model = OLS("Y ~ X1 + X2+X3", df).fit()   # adjust formula to your columns
     print(model.summary())
     print("sigma^2:", model.sigmasq)
     print("SNR:", model.snr())
-'''
+    print("R^2:", model.r_squared())
+    print("Adj R^2:", model.adj_r_squared())
+    
