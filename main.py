@@ -3,10 +3,13 @@ from rand_data_analysis import generate_ols_dataset
 
 
 if __name__ == "__main__":
-    
-    
     df = generate_ols_dataset()
-    model = OLS("Y ~ X1 + X2+X3", df).fit()   # adjust formula to your columns
+
+    regressors = [c for c in df.columns if c.startswith("X")]
+    formula = "Y ~ " + " + ".join(regressors)
+    
+    model = OLS(formula, df).fit()
+    
     print(model.summary())
     print("sigma^2:", model.sigmasq)
     print("SNR:", model.snr())
