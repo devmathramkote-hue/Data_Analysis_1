@@ -10,15 +10,20 @@ if __name__ == "__main__":
     
     model = OLS(formula, df).fit()
     
+    print("Model Summary:")
     print(model.summary())
+    print("")
     print("sigma^2:", model.sigmasq)
     print("SNR:", model.snr())
     print("R^2:", model.r_squared())
     print("Adj R^2:", model.adj_r_squared())
     
-    #print(model.cov_beta())
-    print(model.corr_beta())
+    print("Covariance matrix of beta estimates:")
+    print(model.cov_beta())
+    
+    #print(model.corr_beta())
     #print(model.cov_vars())
+    
     print("")
     print("Heteroskedasticity Test:")
     test = Test(model)

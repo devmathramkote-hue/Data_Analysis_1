@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from patsy import dmatrices
+from scipy import stats
 from statsmodels.stats.diagnostic import het_breuschpagan
 
 
@@ -103,6 +104,24 @@ class Test: # This class implements various statistical tests for the fitted OLS
             
         print("p-value:", pval)
             
+    def heteroskedasticity_manual(self):
+        """Manual Breusch-Pagan test for heteroskedasticity."""
+        uhat = self.model.y - self.model.X @ self.model.beta
+        uhat2 = uhat.flatten() ** 2
+        df = pd.DataFrame(self.model.X, columns=self.model.names)
+        df["uhat2"] = uhat2
+        formula = "uhat2 ~ " + " + ".join(self.model.names)
+        model2 = OLS(formula, df).fit()
+        r2 = model2.r_squared()
+        LM = self.model.n * r2
+        pval = 1 - stats.chi2.cdf(LM, self.model.k - 1)
+        
+        if pval < 0.05:
+            print("Reject H0: Evidence of heteroskedasticity.")
+        else:
+            print("Fail to reject H0: No evidence of heteroskedasticity.")
+            
+        print("p-value:", pval) 
         
 
 
