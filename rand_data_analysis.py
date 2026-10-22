@@ -1,17 +1,17 @@
 import pandas as pd
 import numpy as np
-import var
+import config as c
 
 def generate_ols_dataset(
-    n_obs=var.n_obs,
-    beta_0=var.beta_0,
-    betas=var.betas,
-    x_bounds=var.x_bounds,
-    noise_mean=var.noise_mean,
-    noise_std=var.noise_std,
-    include_error_col=var.include_error_col,
-    seed=var.seed,
-    output_filepath=var.output_filepath,
+    n_obs=c.n_obs,
+    beta_0=c.beta_0,
+    betas=c.betas,
+    x_bounds=c.x_bounds,
+    noise_mean=c.noise_mean,
+    noise_std=c.noise_std,
+    include_error_col=c.include_error_col,
+    seed=c.seed,
+    output_filepath=c.output_filepath,
 ):
     rng = np.random.default_rng(seed)
     betas = np.asarray(betas)
